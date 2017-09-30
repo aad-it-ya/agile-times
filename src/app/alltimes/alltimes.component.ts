@@ -77,6 +77,8 @@ export class AlltimesComponent implements OnInit {
   cancelEdit(){
         this.addEntryForm.reset();
       }
+      onRowSelect($event){}
+      onEditComplete($event){}
   onSaveComplete() {
         const user = this.addEntryForm.value.User;
         const project = this.addEntryForm.value.Project;
