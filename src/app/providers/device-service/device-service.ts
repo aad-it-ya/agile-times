@@ -6,6 +6,8 @@ import 'rxjs/add/operator/map';
 import { DeviceModel } from '../../models/device';
 import { NestCamEventModel } from '../../models/nestcam-event';
 import { NotificationService } from '../notification-service/notification-service';
+import { Apollo } from 'apollo-angular';
+import gql from 'graphql-tag';
 
 @Injectable()
 export class DeviceService {
@@ -19,8 +21,9 @@ export class DeviceService {
   public _deviceStore: {
     devices: Array<DeviceModel>
   };
+ 
 
-  constructor(private _nestAPI: NestApplicationInterface, private _notify: NotificationService) {
+  constructor(private _nestAPI: NestApplicationInterface, private _notify: NotificationService, private apollo: Apollo) {
 
     this._deviceStore = { devices: new Array<DeviceModel>() };
 
@@ -73,6 +76,7 @@ export class DeviceService {
         var model = new DeviceModel();
 
         model.id = nestCamera.device_id;
+
         model.name = nestCamera.name;
         model.snapshotURL = nestCamera.snapshot_url;
         model.appURL = nestCamera.app_url;
@@ -117,7 +121,7 @@ export class DeviceService {
 
     var parsedUrl: string = url;
 
-    parsedUrl = parsedUrl + '?autoplay=1';
+    parsedUrl = parsedUrl  + '?autoplay=1';
 
     return parsedUrl;
 
@@ -144,7 +148,11 @@ export class DeviceService {
             newDevice.hasNewEvent = true;
             this._notify.SendMotionNotification(newDevice);
 
-          }
+            this._CreateMotionEvent(newDevice);
+         
+         }
+
+          
 
           break;
         }
@@ -154,6 +162,48 @@ export class DeviceService {
     }
 
     return newDevices;
+
+  }
+
+  private _CreateMotionEvent(motionDevice: DeviceModel){
+
+    const motionSnap = motionDevice.snapshotURL;
+            const camName = motionDevice.name;
+            const eventStart = motionDevice.LastEvent.startTime;
+            const eventEnd = motionDevice.LastEvent.endTime;
+
+            console.log(motionDevice.snapshotURL);
+            console.log(motionDevice.name);
+            console.log(motionDevice.LastEvent.startTime);
+            console.log(motionDevice.LastEvent.endTime);
+
+
+            const createMotionEvent = gql`
+             mutation createMotionEvent ($motionSnap: String!, $camName: String!, $eventStart: DateTime!, $eventEnd: DateTime!) {
+               createMotionEvent(motionSnap: $motionSnap, camName: $camName, eventStart: $eventStart, eventEnd: $eventEnd) {
+                 id
+               }
+             }
+           `;
+     
+           this.apollo.mutate({
+           mutation: createMotionEvent,
+           variables: {
+                motionSnap: motionSnap,
+                camName: camName,
+                eventStart: eventStart,
+                eventEnd: eventEnd
+           }
+         }).subscribe(({ data }) => {
+           console.log('got data', data);
+           
+         }, (error) => {
+           console.log('there was an error sending the query', error);
+         });
+         
+         
+
+
 
   }
 

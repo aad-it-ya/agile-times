@@ -12,6 +12,7 @@ export class NestcamComponent implements OnInit {
 
   isStreaming: boolean;
   cameraName: string;
+  motionEventsData = [];
 
   constructor(private apollo: Apollo, private _deviceService: DeviceService) {
 
@@ -53,6 +54,28 @@ export class NestcamComponent implements OnInit {
         this.cameraName = 'Offline';
 
       }
+
+    });
+
+    const motionEventsData = gql`
+    query allMotionEvents {
+      allMotionEvents {
+          id
+          motionSnap
+          camName
+          eventStart
+          eventEnd
+        }
+    }`;
+
+    const queryObservable1 = this.apollo.watchQuery({
+
+      query: motionEventsData,
+      pollInterval: 500
+
+    }).subscribe(({ data, loading }: any) => {
+
+      this.motionEventsData = data.allMotionEvents;
 
     });
 
