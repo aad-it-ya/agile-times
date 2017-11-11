@@ -66,12 +66,12 @@ function nestcamOn(intent, session, callback) {
     const shouldEndSession = true;
     let speechOutput = "Initializing video feed.";
 
-    var client = require('graphql-client')({ url: 'https://api.graph.cool/simple/v1/cj7qirvgf02cl0116yr8ks74h' });
+    var client = require('graphql-client')({ url: 'https://api.graph.cool/simple/v1/cj7zgkmi02bw101475q9iewka' });
     
         client.query(`
             mutation {
                 updateNestCam(
-                    id: "cj9k4unu9pwqh0104z9gkov2l"
+                    id: "cj9uus48z74xg0114yje2t5p4"
                     isStreaming: true
                 )
                 {
@@ -106,12 +106,12 @@ function nestcamOff(intent, session, callback) {
     const shouldEndSession = true;
     let speechOutput = "Killing video stream.";
 
-    var client = require('graphql-client')({ url: 'https://api.graph.cool/simple/v1/cj7qirvgf02cl0116yr8ks74h' });
+    var client = require('graphql-client')({ url: 'https://api.graph.cool/simple/v1/cj7zgkmi02bw101475q9iewka' });
     
         client.query(`
             mutation {
                 updateNestCam(
-                    id: "cj9k4unu9pwqh0104z9gkov2l"
+                    id: "cj9uus48z74xg0114yje2t5p4"
                     isStreaming: false
                 )
                 {
